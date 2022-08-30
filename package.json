@@ -1,5 +1,5 @@
 {
-  "name": "frontier",
+  "name": "ioredis-search",
   "version": "1.0.0",
   "description": "demo",
   "main": "main.js",
