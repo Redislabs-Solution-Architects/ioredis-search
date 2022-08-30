@@ -10,7 +10,7 @@ const COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
 
 async function load(client) {
     const pipeline = client.pipeline();
-    
+
     for (let i=0; i < NUM; i++) {
         const colors = (COLORS.sort(() => .5 - Math.random())).slice(0, Math.floor(Math.random() * COLORS.length))
         const fields = {
@@ -59,7 +59,7 @@ async function aggregate(client) {
     console.log('FT.AGGREGATE idx @tagField:{ yellow | red } LOAD 3 @textField @numericField @tagField WITHCURSOR COUNT 2');
     let items = result[0];
     let cursor = result[1];
-    do {
+    while (true) {
         for (let item of items) {
             if (Array.isArray(item)) {
                 console.log(JSON.stringify(item))
@@ -70,7 +70,10 @@ async function aggregate(client) {
             items = result[0];
             cursor = result[1];
         }
-    } while (cursor);
+        else {
+            break;
+        }
+    }
     console.log();
 }
 
