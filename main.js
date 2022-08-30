@@ -49,12 +49,11 @@ async function aggregate(client) {
         'APPLY', 'SQRT(@numericField)', 'AS', 'SQRT');
     console.log(`FT.AGGREGATE idx @numericField:[0,${upper}] APPLY SQRT(@numericField) AS SQRT - ${JSON.stringify(result)}\n`);
 
-    result = await client.call('FT.AGGREGATE', 'idx', '@tagField:{yellow | red}', 
+    result = await client.call('FT.AGGREGATE', 'idx', '@tagField:{ yellow | red }', 
         'LOAD', '3', '@textField', '@numericField', '@tagField',
         'WITHCURSOR', 'COUNT', '2'
     );
-    console.log('FT.AGGREGATE idx @tagField:{yellow | red} LOAD 3 @textField @numericField @tagField WITHCURSOR COUNT 2'
-    );
+    console.log('FT.AGGREGATE idx @tagField:{ yellow | red } LOAD 3 @textField @numericField @tagField WITHCURSOR COUNT 2');
     let items = result[0];
     let cursor = result[1];
     do {
@@ -74,9 +73,13 @@ async function aggregate(client) {
 
 async function alter(client) {
     console.log('Adding additional text field "newField" to all hashes and altering index');
+    
+    const pipeline = client.pipeline();
     for (let i=0; i < NUM; i++) {
-        await client.hset(`item:${i}`, 'newField', `new${Math.floor(Math.random() * NUM)}`)
+        await pipeline.hset(`item:${i}`, 'newField', `new${Math.floor(Math.random() * NUM)}`)
     }
+    await pipeline.exec();
+
     await client.call('FT.ALTER', 'idx', 'SCHEMA', 'ADD', 'newField', 'TEXT', 'SORTABLE');
     let result = await client.call('FT.INFO', 'idx');
     console.log(`FT.INFO idx - ${JSON.stringify(result)}\n`);
