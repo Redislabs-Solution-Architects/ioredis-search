@@ -9,8 +9,7 @@ const NUM = 10;
 const COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
 
 async function load(client) {
-    let i;
-    for (i=0; i < NUM; i++) {
+    for (let i=0; i < NUM; i++) {
         const colors = (COLORS.sort(() => .5 - Math.random())).slice(0, Math.floor(Math.random() * COLORS.length))
         const fields = {
             'textField': `text${Math.floor(Math.random() * NUM)}`, 
