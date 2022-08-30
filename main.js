@@ -88,7 +88,7 @@ async function alter(client) {
 (async () => {
     try {
         dotenv.config();
-        var client = new Redis(process.env.REDIS_URL || '');
+        var client = new Redis(process.env.REDIS_URL);
         await load(client);
         await search(client);
         await aggregate(client);
