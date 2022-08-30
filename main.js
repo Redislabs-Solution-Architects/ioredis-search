@@ -9,6 +9,8 @@ const NUM = 10;
 const COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
 
 async function load(client) {
+    const pipeline = client.pipeline();
+    
     for (let i=0; i < NUM; i++) {
         const colors = (COLORS.sort(() => .5 - Math.random())).slice(0, Math.floor(Math.random() * COLORS.length))
         const fields = {
@@ -16,14 +18,15 @@ async function load(client) {
             'numericField': Math.floor(Math.random() * NUM), 
             'tagField': colors
         };
-        await client.hmset(`item:${i}`, fields);
+        await pipeline.hmset(`item:${i}`, fields);
     }
+    await pipeline.exec();
+
     await client.call('FT.CREATE', 'idx', 'ON', 'HASH', 'PREFIX', '1', 'item:', 'SCHEMA', 
         'textField', 'TEXT', 'SORTABLE',
         'numericField', 'NUMERIC', 'SORTABLE',
         'tagField', 'TAG'
     );
-    
     const result = await client.call('FT.INFO', 'idx');
     console.log(`FT.INFO idx - ${JSON.stringify(result)}\n`);
 }
